@@ -5,7 +5,7 @@ return {
     lazy = false,
     config = function()
       require("tokyonight").setup({
-        style = "moon", -- options: "storm", "moon", "night", "day"
+        style = "night", -- options: "storm", "moon", "night", "day"
         transparent = false,
         terminal_colors = true,
         styles = {
@@ -17,7 +17,7 @@ return {
         sidebars = { "qf", "help", "NvimTree", "terminal" },
         dim_inactive = false,
       })
-      vim.cmd("colorscheme tokyonight-moon")
+      vim.cmd("colorscheme tokyonight-night")
     end,
   },
 }

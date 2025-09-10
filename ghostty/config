@@ -1,11 +1,11 @@
 font-family = Hack Nerd Font
-font-size = 16
+font-size = 18
 window-title-font-family = Hack Nerd Font
+
 theme = Dracula
 
-cursor-style = block
 mouse-hide-while-typing = true
 
-macos-titlebar-style = transparent
-
-window-padding-x = 10
+window-height = 33
+window-width = 97
+window-padding-x = 15
