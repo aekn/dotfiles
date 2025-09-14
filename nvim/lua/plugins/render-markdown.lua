@@ -12,7 +12,6 @@ return {
     render_modes = true,
     heading = {
       border = true,
-      border_virtual = true,
       sign = false,
       icons = { '' }
     },
