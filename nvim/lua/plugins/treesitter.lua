@@ -35,7 +35,7 @@ return {
         enable = true,
       },
       indent = { enable = true },
-      autopairs = { enable = true },
+      autopairs = { enable = false },
     })
 
     -- require("nvim-ts-autotag").setup()

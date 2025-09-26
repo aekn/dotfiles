@@ -38,26 +38,77 @@ return {
       end)
 
       lsp.setup()
+      -- Good UX for completion popups
 
-      -- CMP setup
+      vim.o.completeopt = "menu,menuone,noselect"
+
+      -- OPTIONAL: community snippets for many languages
+      --   :Lazy install rafamadriz/friendly-snippets (or add as a dep in your plugin spec)
+      pcall(function()
+        require("luasnip.loaders.from_vscode").lazy_load()
+      end)
+
       local cmp = require("cmp")
+      local luasnip = require("luasnip")
+
+      -- helper: is there a word before cursor?
+      local has_words_before = function()
+        local line, col = (table.unpack or unpack)(vim.api.nvim_win_get_cursor(0))
+        if col == 0 then return false end
+        local prev = vim.api.nvim_buf_get_text(0, line - 1, col - 1, line - 1, col, {})[1]
+        return not prev:match("%s")
+      end
+
       cmp.setup({
-        mapping = {
-          ["<C-p>"] = cmp.mapping.select_prev_item(),
+        preselect = cmp.PreselectMode.None,
+        mapping = cmp.mapping.preset.insert({
           ["<C-n>"] = cmp.mapping.select_next_item(),
+          ["<C-p>"] = cmp.mapping.select_prev_item(),
           ["<C-y>"] = cmp.mapping.confirm({ select = true }),
           ["<C-Space>"] = cmp.mapping.complete(),
-        },
+
+          -- TAB behavior
+          ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+              luasnip.expand_or_jump()
+            elseif has_words_before() then
+              cmp.complete()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+
+          ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+              luasnip.jump(-1)
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+        }),
+
         sources = {
           { name = "nvim_lsp" },
-          { name = "buffer" },
           { name = "path" },
+          { name = "buffer" },
+          { name = "luasnip" }, -- keep this if you use snippets
         },
+
+        -- Keep your “no icons” style
         formatting = {
           format = function(_, item)
-            item.kind = "" -- no icons
+            item.kind = ""
             return item
           end,
+        },
+
+        -- Optional: nicer docs window
+        window = {
+          documentation = cmp.config.window.bordered(),
         },
       })
     end,
@@ -81,4 +132,46 @@ return {
       },
     },
   },
+
+  -- Pair stuff that needs to be paired
+  {
+    "echasnovski/mini.pairs",
+    event = "InsertEnter",
+    config = function()
+      local mp = require("mini.pairs")
+
+      -- Right-neighbor blacklist from your skip_next:
+      -- [%w%%%'%[%"%.%`%$]
+      local right_blacklist = "[^%w%%%'%[%%\"%.%`%$]"
+
+      mp.setup({
+        modes = { insert = true, command = true, terminal = false }, -- :contentReference[oaicite:1]{index=1}
+
+        mappings = {
+          -- Open/close brackets
+          ["("] = { action = "open", pair = "()", neigh_pattern = "[^\\]" .. right_blacklist },
+          [")"] = { action = "close", pair = "()", neigh_pattern = "[^\\]" .. right_blacklist },
+          ["["] = { action = "open", pair = "[]", neigh_pattern = "[^\\]" .. right_blacklist },
+          ["]"] = { action = "close", pair = "[]", neigh_pattern = "[^\\]" .. right_blacklist },
+          ["{"] = { action = "open", pair = "{}", neigh_pattern = "[^\\]" .. right_blacklist },
+          ["}"] = { action = "close", pair = "{}", neigh_pattern = "[^\\]" .. right_blacklist },
+
+          -- Quotes: keep the plugin defaults but add the right-char check
+          ['"'] = { action = "closeopen", pair = '""', neigh_pattern = "[^\\]" .. right_blacklist, register = { cr = false } },
+          ["'"] = { action = "closeopen", pair = "''", neigh_pattern = "[^%a\\]" .. right_blacklist, register = { cr = false } },
+          ["`"] = { action = "closeopen", pair = "``", neigh_pattern = "[^\\]" .. right_blacklist, register = { cr = false } },
+        },
+      })
+
+      -- mini.pairs doesn’t have a built-in "markdown=true"; easiest is to unmap backtick *in markdown buffers*.
+      -- You can later add smarter logic if you like.
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "markdown",
+        callback = function()
+          -- Remove the buffer-local backtick mapping
+          MiniPairs.unmap_buf(0, "i", "`", "``") -- :contentReference[oaicite:2]{index=2}
+        end,
+      })
+    end,
+  }
 }
