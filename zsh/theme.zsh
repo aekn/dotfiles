@@ -1,10 +1,3 @@
-# Minimal fast zsh prompt
-# ~/dir (branch) (venv)
-# - cwd: blue
-# - branch: green if clean, red if dirty
-# - venv: magenta
-# - arrow: green/red depending on last command
-
 autoload -U colors add-zsh-hook && colors
 setopt prompt_subst
 

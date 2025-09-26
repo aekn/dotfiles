@@ -1,0 +1,7 @@
+[core]
+	editor = nvim
+[user]
+	name = aekn
+	email = aekn.admal@gmail.com
+[init]
+	defaultBranch = main
