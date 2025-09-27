@@ -1,42 +1,34 @@
-# ui
 theme = Dracula
 background = #000000
 background-opacity = 0.75
-background-blur-radius = 23
+background-blur-radius = 40
+split-divider-color = #555555
 
 font-family = Hack Nerd Font
 font-size = 20
 
 cursor-style = block
 cursor-opacity = 0.75
-shell-integration-features = no-cursor
-
-macos-titlebar-style = transparent
 mouse-hide-while-typing = true
 
 window-decoration = auto
 window-padding-x = 15
-window-padding-balance = false
+window-save-state = always
 
-# split
-keybind = super+b>'=new_split:right
-keybind = super+b>;=new_split:down
-keybind = super+b>e=equalize_splits
+keybind = super+/=new_split:right
+keybind = super+.=new_split:down
+keybind = super+e=equalize_splits
+keybind = super+h=goto_split:left
+keybind = super+l=goto_split:right
+keybind = super+k=goto_split:top
+keybind = super+j=goto_split:bottom
+keybind = super+r=reload_config
+keybind = super+enter=toggle_split_zoom
 
-# split nav
-keybind = super+b>h=goto_split:left
-keybind = super+b>l=goto_split:right
-keybind = super+b>k=goto_split:top
-keybind = super+b>j=goto_split:bottom
-
-# notify when stable update available
 auto-update = check
 auto-update-channel = stable
 
-# ...
-macos-option-as-alt = true
-keybind = super+b>r=reload_config
+shell-integration-features = no-cursor
 
-# new window size
-window-height = 33
-window-width = 97
+macos-titlebar-style = transparent
+macos-option-as-alt = true
